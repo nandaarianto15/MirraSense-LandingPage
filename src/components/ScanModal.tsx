@@ -218,13 +218,14 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const [showShareMenu, setShowShareMenu] = useState(false);
+  // PERBAIKAN: Variabel showShareMenu dihapus karena tidak digunakan
   const [isLoading, setIsLoading] = useState(false);
 
   // Funcs
   const resetModal = useCallback(() => {
     setStep(1); setConsent(false); setScore(0); setCurrentPoseIndex(0);
-    setHasPermission(null); setShowShareMenu(false);
+    setHasPermission(null); 
+    // PERBAIKAN: setShowShareMenu(false) dihapus
     setCapturedFiles({ center: null, left: null, right: null });
     setFormData({ name: '', email: '', phone: '' });
     setAnalysisResult(null);
@@ -346,7 +347,13 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
   }, [formData, capturedFiles, animateResult]);
 
   useEffect(() => { if (step === 2) enableCamera(); else disableCamera(); return () => disableCamera(); }, [step, enableCamera, disableCamera]);
-  useEffect(() => { if (!isOpen) { disableCamera(); setShowShareMenu(false); resetModal(); } }, [isOpen, disableCamera, resetModal]);
+  useEffect(() => { 
+    if (!isOpen) { 
+        disableCamera(); 
+        // PERBAIKAN: setShowShareMenu(false) dihapus
+        resetModal(); 
+    } 
+}, [isOpen, disableCamera, resetModal]);
 
   if (!isOpen) return null;
 
