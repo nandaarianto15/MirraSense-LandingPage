@@ -218,14 +218,12 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  // PERBAIKAN: Variabel showShareMenu dihapus karena tidak digunakan
   const [isLoading, setIsLoading] = useState(false);
 
   // Funcs
   const resetModal = useCallback(() => {
     setStep(1); setConsent(false); setScore(0); setCurrentPoseIndex(0);
     setHasPermission(null); 
-    // PERBAIKAN: setShowShareMenu(false) dihapus
     setCapturedFiles({ center: null, left: null, right: null });
     setFormData({ name: '', email: '', phone: '' });
     setAnalysisResult(null);
@@ -350,7 +348,6 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
   useEffect(() => { 
     if (!isOpen) { 
         disableCamera(); 
-        // PERBAIKAN: setShowShareMenu(false) dihapus
         resetModal(); 
     } 
 }, [isOpen, disableCamera, resetModal]);
@@ -444,12 +441,20 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
                 <p className="text-white/60 text-xs">{poseInstruction[currentPose]}</p>
                 </div>
                 <div id="camera-container" className="aspect-[3/4] rounded-2xl relative overflow-hidden bg-black">
-                <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover transform scale-x-[-1]" />
-                {hasPermission === false && ( <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-30 p-4 text-center"> <p className="text-white text-sm mb-4">Akses kamera diblokir.</p> <button onClick={enableCamera} className="btn-secondary text-xs py-2 px-4">Coba Lagi</button> </div> )}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover transform scale-x-[-1]" />
+                  <div className={`absolute top-4 left-4 z-20 px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-md border border-white/20 flex items-center gap-2 shadow-lg transition-colors duration-300 ${
+                      hasPermission === true 
+                        ? 'bg-green-500/40 text-green-100' 
+                        : 'bg-red-500/40 text-red-100'
+                  }`}>
+                      <span className={`w-2 h-2 rounded-full ${hasPermission === true ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></span>
+                      {hasPermission === true ? 'Kamera Aktif' : 'Kamera Tidak Aktif'}
+                  </div>
+                  {hasPermission === false && ( <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-30 p-4 text-center"> <p className="text-white text-sm mb-4">Akses kamera diblokir.</p> <button onClick={enableCamera} className="btn-secondary text-xs py-2 px-4">Coba Lagi</button> </div> )}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="w-52 h-72 rounded-full border-2 border-[#FF8A9B] opacity-70 shadow-[0_0_15px_rgba(255,138,155,0.3)]"></div>
-                </div>
-                {hasPermission && <div className="scan-line"></div>}
+                  </div>
+                  {hasPermission && <div className="scan-line"></div>}
                 </div>
                 <div className="mt-4 flex gap-3">
                 <button onClick={() => setStep(1)} className="btn-secondary py-3 px-6 flex-1">Kembali</button>

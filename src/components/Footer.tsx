@@ -5,7 +5,6 @@ const Footer = () => {
     <footer className="py-12 border-t border-[rgba(255,255,255,0.1)] relative z-10">
       <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
         
-        {/* Logo Menggantikan Teks */}
         <img 
           src={logoText} 
           alt="Mirra Sense" 
