@@ -237,7 +237,14 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
 
   const enableCamera = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: 720, height: 1280 } });
+      // PERUBAHAN 1: Konfigurasi kamera agar tidak zoom berlebihan (menghilangkan fixed height/widthratio)
+      // Menggunakan ideal width 1280 memungkinkan kamera memilih resolusi terbaik (biasanya 4:3) tanpa crop paksa.
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'user', 
+          width: { ideal: 1280 } 
+        } 
+      });
       if (videoRef.current) videoRef.current.srcObject = stream;
       streamRef.current = stream;
       setHasPermission(true);
@@ -296,7 +303,7 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
 
     try {
       try {
-        const registerRes = await fetch('http://localhost:8000/users/register', {
+        const registerRes = await fetch('/api/users/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -325,7 +332,7 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
       if (capturedFiles.center) apiFormData.append('center', capturedFiles.center);
       if (capturedFiles.right) apiFormData.append('right', capturedFiles.right);
 
-      const response = await fetch('http://localhost:8000/analyze-face', { method: 'POST', body: apiFormData });
+      const response = await fetch('/api/analyze-face', { method: 'POST', body: apiFormData });
       
       if (!response.ok) {
         const errData = await response.json();
@@ -392,7 +399,8 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
 
   return (
     <div className="modal-overlay active" onClick={() => { onClose(); resetModal(); }}>
-      <div className="modal-content w-full max-w-lg mx-4 relative" onClick={e => e.stopPropagation()}>
+      {/* PERUBAHAN 2: Mengurangi margin mx-4 menjadi mx-1 agar modal lebih lebar di mobile */}
+      <div className="modal-content w-full max-w-lg mx-1 relative" onClick={e => e.stopPropagation()}>
         
         <button 
             onClick={() => { onClose(); resetModal(); }} 
@@ -442,14 +450,17 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
                 </div>
                 <div id="camera-container" className="aspect-[3/4] rounded-2xl relative overflow-hidden bg-black">
                   <video ref={videoRef} autoPlay playsInline muted className="absolute inset-0 w-full h-full object-cover transform scale-x-[-1]" />
-                  <div className={`absolute top-4 left-4 z-20 px-3 py-1.5 rounded-full text-xs font-bold backdrop-blur-md border border-white/20 flex items-center gap-2 shadow-lg transition-colors duration-300 ${
+                  
+                  {/* PERUBAHAN 3: Teks label dibuat lebih kecil (text-[10px]) */}
+                  <div className={`absolute top-4 left-4 z-20 px-2 py-1 rounded-full text-[10px] font-bold backdrop-blur-md border border-white/20 flex items-center gap-1.5 shadow-lg transition-colors duration-300 ${
                       hasPermission === true 
                         ? 'bg-green-500/40 text-green-100' 
                         : 'bg-red-500/40 text-red-100'
                   }`}>
-                      <span className={`w-2 h-2 rounded-full ${hasPermission === true ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${hasPermission === true ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></span>
                       {hasPermission === true ? 'Kamera Aktif' : 'Kamera Tidak Aktif'}
                   </div>
+
                   {hasPermission === false && ( <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-30 p-4 text-center"> <p className="text-white text-sm mb-4">Akses kamera diblokir.</p> <button onClick={enableCamera} className="btn-secondary text-xs py-2 px-4">Coba Lagi</button> </div> )}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="w-52 h-72 rounded-full border-2 border-[#FF8A9B] opacity-70 shadow-[0_0_15px_rgba(255,138,155,0.3)]"></div>
@@ -458,7 +469,7 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
                 </div>
                 <div className="mt-4 flex gap-3">
                 <button onClick={() => setStep(1)} className="btn-secondary py-3 px-6 flex-1">Kembali</button>
-                <button onClick={handleCapture} className="btn-primary py-3 px-6 flex-[2]"> {currentPoseIndex < poseOrder.length - 1 ? 'Capture' : 'Selesai Scan'} </button>
+                <button onClick={handleCapture} className="btn-primary py-3 px-6 flex-[2]"> {currentPoseIndex < poseOrder.length - 1 ? 'Capture' : 'Capture'} </button>
                 </div>
             </div>
             )}
