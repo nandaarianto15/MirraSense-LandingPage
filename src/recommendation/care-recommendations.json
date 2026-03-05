@@ -1,0 +1,404 @@
+    [
+    {
+    "label": "Jerawat",
+    "recommendations": {
+        "ringan": [
+            "Cuci wajah dua kali sehari dengan pembersih lembut.",
+            "Hindari menyentuh atau memencet jerawat.",
+            "Gunakan krim OTC yang mengandung benzoyl peroxide atau salicylic acid.",
+            "Gunakan pelembab non-comedogenic (tidak menyumbat pori)."
+        ],
+        "sedang": [
+            "Gunakan retinoid topikal (seperti adapalene) pada malam hari.",
+            "Pertimbangkan penggunaan asam azelaic untuk mengurangi peradangan.",
+            "Gunakan tabir surya setiap hari karena pengobatan topikal membuat kulit sensitif.",
+            "Hindari produk skincare yang mengandung alkohol tinggi."
+        ],
+        "berat": [
+            "Segera konsultasi ke dokter kulit.",
+            "Dokter mungkin akan meresepkan antibiotik oral atau isotretinoin.",
+            "Terapi kombinasi (krim malam + obat minum) biasanya diperlukan.",
+            "Lakukan perawatan teratur untuk mencegah bekas permanen."
+        ]
+    }
+    },
+    {
+    "label": "Komedo Hitam",
+    "recommendations": {
+        "ringan": [
+            "Eksfoliasi lembut 1-2 kali seminggu dengan BHA (Salicylic Acid).",
+            "Cuci muka dengan pembersih berbahan charcoal atau clay mask seminggu sekali.",
+            "Hindari penggunaan cleansing oil yang tidak dibilas bersih."
+        ],
+        "sedang": [
+            "Lakukan double cleansing (minyak pembersih lalu busa) setiap malam.",
+            "Gunakan krim retinol untuk mempercepat pergantian sel kulit.",
+            "Gunakan clay mask 2 kali seminggu di area T-zone."
+        ],
+        "berat": [
+            "Lakukan ekstraksi komedo oleh estetisi atau dokter kulit profesional.",
+            "Pertimbangkan chemical peeling dengan asam salisilat.",
+            "Gunakan resep topikal retinoid yang lebih kuat dari dokter."
+        ]
+    }
+    },
+    {
+    "label": "Komedo Putih",
+    "recommendations": {
+        "ringan": [
+            "Gunakan pembersih wajah yang mengandung AHA/BHA.",
+            "Eksfoliasi secara teratur untuk mengangkat sel kulit mati.",
+            "Gunakan pelembab yang ringan dan oil-free."
+        ],
+        "sedang": [
+            "Aplikasikan toner eksfoliasi atau retinoid ringan.",
+            "Lakukan facial rutin setiap bulan untuk pembersihan mendalam.",
+            "Hindari produk skincare bertekstur terlalu kental atau creamy."
+        ],
+        "berat": [
+            "Konsultasi dengan dokter kulit untuk krim resep (seperti Tretinoin).",
+            "Pertimbangkan prosedur chemical peeling.",
+            "Lakukan ekstraksi profesional untuk menghilangkan komedo membandel."
+        ]
+    }
+    },
+    {
+    "label": "Flek Hitam",
+    "recommendations": {
+        "ringan": [
+            "Wajib gunakan sunscreen SPF 30+ setiap hari, bahkan di dalam ruangan.",
+            "Gunakan serum Vitamin C di pagi hari untuk mencerahkan kulit.",
+            "Gunakan topi atau payung saat aktivitas di bawah terik matahari."
+        ],
+        "sedang": [
+            "Tambahkan Niacinamide atau Alpha Arbutin dalam rutinitas malam.",
+            "Gunakan eksfoliasi kimia (AHA) 1-2 kali seminggu.",
+            "Gunakan pelembab dengan kandungan pemutih alami."
+        ],
+        "berat": [
+            "Lakukan treatment laser IPL atau chemical peeling di klinik.",
+            "Konsultasi dokter untuk penggunaan krim hydroquinone (resep dokter).",
+            "Konsistensi penggunaan sunscreen sangat krusial untuk mencegah penghitaman."
+        ]
+    }
+    },
+    {
+    "label": "Kerutan",
+    "recommendations": {
+        "ringan": [
+            "Gunakan pelembab dengan kandungan Peptide dan Ceramide.",
+            "Rajin mengaplikasikan sunscreen untuk mencegah penuaan foto.",
+            "Konsumsi makanan kaya antioksidan dan minum air putih yang cukup."
+        ],
+        "sedang": [
+            "Mulai gunakan Retinol secara bertahap di malam hari.",
+            "Gunakan serum Hyaluronic Acid untuk menjaga kelembaban kulit.",
+            "Gunakan eye cream khusus untuk area mata."
+        ],
+        "berat": [
+            "Pertimbangkan prosedur medis seperti Botox atau Filler oleh dokter.",
+            "Lakukan treatment laser resurfacing atau microneedling.",
+            "Gunakan skincare dengan kandungan Retinoid kuat (resep dokter)."
+        ]
+    }
+    },
+    {
+    "label": "Kantung Mata",
+    "recommendations": {
+        "ringan": [
+            "Tidur cukup 7-8 jam setiap malam.",
+            "Kurangi asupan garam berlebih sebelum tidur.",
+            "Kompres mata dengan air dingin atau sendok dingin di pagi hari."
+        ],
+        "sedang": [
+            "Gunakan eye cream dengan kandungan Kafein atau Vitamin C.",
+            "Gunakan alat bantu pijat mata (eye massager) untuk melancarkan sirkulasi.",
+            "Hindari begadang dan paparan layar berlebih sebelum tidur."
+        ],
+        "berat": [
+            "Konsultasi dengan dokter kulit untuk prosedur blepharoplasty.",
+            "Pertimbangkan treatment radiofrequency untuk mengencangkan kulit.",
+            "Gunakan concealer dengan warna yang tepat untuk koreksi visual."
+        ]
+    }
+    },
+    {
+    "label": "Kulit Berminyak",
+    "recommendations": {
+        "ringan": [
+            "Cuci muka dengan pembersih berbahan dasar gel (gel cleanser).",
+            "Gunakan pelembab ringan bertekstur water-based atau gel.",
+            "Gunakan kertas minyak (oil blotting paper) daripada menyeka dengan tangan."
+        ],
+        "sedang": [
+            "Gunakan toner dengan Niacinamide atau Salicylic Acid.",
+            "Gunakan clay mask seminggu sekali untuk menyerap minyak.",
+            "Hindari mencuci muka berlebihan (lebih dari 2x sehari)."
+        ],
+        "berat": [
+            "Pertimbangkan penggunaan Isotretinoin dosis rendah (resep dokter).",
+            "Lakukan treatment laser untuk mengecilkan ukuran pori.",
+            "Konsultasi dokter untuk mengatur keseimbangan hormon."
+        ]
+    }
+    },
+    {
+    "label": "Kulit Kering",
+    "recommendations": {
+        "ringan": [
+            "Gunakan pelembab berbahan dasar krim (cream) atau minyak.",
+            "Hindari mencuci muka dengan air panas.",
+            "Konsumsi air putih minimal 8 gelas per hari."
+        ],
+        "sedang": [
+            "Gunakan serum Hyaluronic Acid saat kulit masih lembab.",
+            "Lakukan layering skincare (toner -> essence -> cream).",
+            "Gunakan humidifier di ruangan ber-AC."
+        ],
+        "berat": [
+            "Gunakan salep/krim emollient kental (seperti petroleum jelly) di malam hari.",
+            "Konsultasi dokter jika kulit pecah-pecah atau gatal hebat.",
+            "Hindari produk dengan kandungan alkohol, wewangian, atau retinoid tinggi."
+        ]
+    }
+    },
+    {
+    "label": "Pori-pori Besar",
+    "recommendations": {
+        "ringan": [
+            "Gunakan primer makeup berbahan silicone untuk mengecilkan tampilan pori.",
+            "Eksfoliasi ringan dengan BHA untuk membersihkan pori dari dalam.",
+            "Jaga kebersihan wajah agar pori tidak tersumbat sebum."
+        ],
+        "sedang": [
+            "Gunakan Retinol untuk memperkuat dinding pori.",
+            "Lakukan clay mask mingguan di area pori membesar.",
+            "Gunakan Niacinamide untuk mengontrol produksi minyak."
+        ],
+        "berat": [
+            "Lakukan treatment laser fractional di klinik kecantikan.",
+            "Pertimbangkan microneedling untuk merangsang kolagen.",
+            "Konsistensi penggunaan Retinoid resep dokter."
+        ]
+    }
+    },
+    {
+    "label": "Kemerahan Kulit",
+    "recommendations": {
+        "ringan": [
+            "Gunakan produk dengan kandungan Centella Asiatica atau Aloe Vera.",
+            "Hindari scrub fisik dan produk dengan alkohol.",
+            "Gunakan air biasa atau air dingin saat mencuci muka."
+        ],
+        "sedang": [
+            "Gunakan Azelaic Acid untuk meredakan peradangan.",
+            "Gunakan sunscreen fisik (Physical Sunscreen) dengan Zinc Oxide.",
+            "Hindari makanan pedas dan pemicu rosycea lainnya."
+        ],
+        "berat": [
+            "Segera konsultasi dokter kulit, mungkin tanda Rosacea atau Dermatitis.",
+            "Dokter mungkin meresepkan obat oral atau krim anti-inflamasi.",
+            "Lakukan laser v-beam untuk menghilangkan kemerahan pembuluh darah."
+        ]
+    }
+    },
+    {
+    "label": "Bekas Jerawat",
+    "recommendations": {
+        "ringan": [
+            "Gunakan Vitamin C serum untuk mencerahkan bekas.",
+            "Penting gunakan sunscreen agar bekas tidak menghitam (PIH).",
+            "Gunakan Niacinamide untuk memperbaiki skin barrier."
+        ],
+        "sedang": [
+            "Gunakan eksfoliasi kimia (AHA/BHA) untuk regenerasi kulit.",
+            "Gunakan Retinol untuk mempercepat pergantian sel kulit.",
+            "Gunakan microneedling dermaroller (dengan hati-hati)."
+        ],
+        "berat": [
+            "Lakukan treatment laser CO2 fractional di klinik.",
+            "Pertimbangkan subcision atau filler untuk bekas jerawat dalam.",
+            "Konsultasi intensif dengan dokter kulit untuk perencanaan perawatan."
+        ]
+    }
+    },
+    {
+    "label": "Papula",
+    "recommendations": {
+        "ringan": [
+            "Kompres hangat pada area yang meradang.",
+            "Gunakan pembersih antibakteri.",
+            "Aplikasikan Benzoyl Peroxide 2.5% atau 5% tipis-tipis."
+        ],
+        "sedang": [
+            "Aplikasikan Retinoid topikal pada malam hari.",
+            "Hindari produk skincare berminyak.",
+            "Mungkin diperlukan krim antibiotik topikal (klindamisin)."
+        ],
+        "berat": [
+            "Kunjungi dokter kulit untuk pemeriksaan lebih lanjut.",
+            "Kemungkinan besar membutuhkan antibiotik oral.",
+            "Jangan dipencet untuk menghindari infeksi lebih luas."
+        ]
+    }
+    },
+    {
+    "label": "Pustula",
+    "recommendations": {
+        "ringan": [
+            "Oleskan Benzoyl Peroxide atau Salicylic Acid pada area benjolan.",
+            "Jangan sekali-kali memecah atau memencet pustula.",
+            "Gunakan patch jerawat (acne patch) untuk menutupi dan menyerap nanah."
+        ],
+        "sedang": [
+            "Gunakan kombinasi Benzoyl Peroxide dan antibiotik topikal.",
+            "Jaga kebersihan seprai dan handuk wajah.",
+            "Hindari kosmetik berat selama peradangan aktif."
+        ],
+        "berat": [
+            "Segera konsultasi dokter kulit.",
+            "Membutuhkan antibiotik oral untuk membunuh bakteri.",
+            "Perhatikan diet (kurangi gula dan susu) untuk mengurangi peradangan."
+        ]
+    }
+    },
+    {
+    "label": "Nodul Jerawat",
+    "recommendations": {
+        "ringan": [
+            "Kompres dingin untuk mengurangi pembengkakan dan rasa nyeri.",
+            "Gunakan Benzoyl Peroxide.",
+            "Jangan disentuh atau dipijat."
+        ],
+        "sedang": [
+            "Segera temui dokter kulit.",
+            "Dokter mungkin akan menyuntikkan kortikosteroid (intralesional injection) untuk mengecilkan.",
+            "Gunakan perawatan topikal resep dokter."
+        ],
+        "berat": [
+            "Terapi isotretinoin oral biasanya menjadi pilihan utama.",
+            "Wajib dalam pengawasan dokter.",
+            "Butuh kesabaran karena penyembuhan memakan waktu."
+        ]
+    }
+    },
+    {
+    "label": "Jerawat Kistik",
+    "recommendations": {
+        "ringan": [
+            "Segera konsultasi dokter kulit, jangan tunda.",
+            "Gunakan pembersih yang sangat lembut.",
+            "Hindari penggunaan scrub atau eksfoliasi kasar."
+        ],
+        "sedang": [
+            "Terapi antibiotik oral mungkin diresepkan dokter.",
+            "Untuk wanita, terapi hormonal (pil KB) mungkin membantu.",
+            "Krim retinoid resep dokter (Tretinoin)."
+        ],
+        "berat": [
+            "Isotretinoin oral (Accutane) adalah solusi jangka panjang yang efektif.",
+            "Wajib monitoring rutin ke dokter (cek darah, efek samping).",
+            "Jangan dipencet karena berisiko besar menyebabkan bekas dalam."
+        ]
+    }
+    },
+    {
+    "label": "Folikulitis",
+    "recommendations": {
+        "ringan": [
+            "Kompres hangat pada area benjolan.",
+            "Gunakan sabun antibakteri saat mandi.",
+            "Hindari memakai pakaian ketat yang menggesek kulit."
+        ],
+        "sedang": [
+            "Gunakan krim antibiotik topikal (seperti Mupirocin) atau antijamur.",
+            "Hindari mencukur area yang terinfeksi sampai sembuh.",
+            "Ganti pisau cukur secara rutit."
+        ],
+        "berat": [
+            "Konsultasi dokter untuk antibiotik oral atau antijamur oral.",
+            "Perlu pemeriksaan kultur untuk mengetahui penyebab (bakteri/jamur).",
+            "Hindari berendam di kolam renang umum atau hot tub."
+        ]
+    }
+    },
+    {
+    "label": "Milia",
+    "recommendations": {
+        "ringan": [
+            "Eksfoliasi ringan dengan Retinol atau AHA.",
+            "Jangan dipencet karena keras dan tidak akan pecah.",
+            "Gunakan pelembab ringan."
+        ],
+        "sedang": [
+            "Gunakan retinoid resep dokter untuk mempercepat pengelupasan.",
+            "Lakukan facial dengan estetisi berpengalaman."
+            ],
+        "berat": [
+            "Pengangkatan milia (de-roofing) oleh dokter kulit menggunakan jarum steril.",
+            "Cryotherapy (pembekuan) oleh dokter.",
+            "Elektrokauteri."
+        ]
+    }
+    },
+    {
+    "label": "Keloid",
+    "recommendations": {
+        "ringan": [
+            "Hindari trauma kulit baru (tindikan, tato, cukur berlebih).",
+            "Gunakan gel silicone sheeting atau silicone gel secara rutin.",
+            "Pijat lembut area parut dengan minyak vitamin E."
+        ],
+        "sedang": [
+            "Suntikan kortikosteroid intralesional oleh dokter untuk mengecilkan.",
+            "Terapi laser untuk meratakan permukaan keloid.",
+            "Kompres tekanan (pressure dressing) jika memungkinkan."
+        ],
+        "berat": [
+            "Pembedahan eksisi keloid (dengan risiko tumbuh kembali lebih besar).",
+            "Terapi radiasi setelah operasi untuk mencegah kekambuhan.",
+            "Perawatan kombinasi oleh dokter kulit atau ahli bedah plastik."
+        ]
+    }
+    },
+    {
+    "label": "Siringoma",
+    "recommendations": {
+        "ringan": [
+            "Tidak memerlukan treatment medis jika tidak mengganggu estetika.",
+            "Fokus pada perawatan kulit normal dan tabir surya.",
+            "Gunakan makeup concealer untuk menutupi jika perlu."
+        ],
+        "sedang": [
+            "Pertimbangkan electrocautery (pembakaran listrik) oleh dokter.",
+            "Laser CO2 untuk menguapkan benjolan.",
+            "Perlu anestesi lokal sebelum prosedur."
+        ],
+        "berat": [
+            "Eksisi bedah ringan oleh dokter kulit.",
+            "Mungkin meninggalkan bekas luka kecil.",
+            "Konsultasi untuk menentukan metode yang paling minim bekas."
+        ]
+    }
+    },
+    {
+    "label": "Kutil Datar",
+    "recommendations": {
+        "ringan": [
+            "Aplikasikan Salicylic Acid cair yang dijual bebas.",
+            "Jangan digaruk atau dipetik untuk mencegah penyebaran virus.",
+            "Tutup dengan plester untuk menghindari penularan."
+        ],
+        "sedang": [
+            "Krioterapi (pembekuan dengan nitrogen cair) di klinik.",
+            "Krim Imiquimod (resep dokter) untuk merangsang sistem imun.",
+            "Kantharidin (cat tar) oleh dokter."
+        ],
+        "berat": [
+            "Elektrokauteri atau laser oleh dokter.",
+            "Pembedahan ringan (curettage).",
+            "Virus HPV penyebabnya menular, jaga kebersihan barang pribadi."
+        ]
+    }
+    }
+    ]
