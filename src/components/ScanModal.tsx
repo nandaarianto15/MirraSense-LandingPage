@@ -169,7 +169,7 @@ const getRecommendationSeverityKey = (severity: string): string => {
 //             <p className="text-white text-sm font-medium">Rahasia kulitmu sudah terkirim!</p>
 //             <p className="text-white/60 text-xs mt-1">Cek WhatsApp & Email untuk detail.</p>
 //           </div>
-//           <button onClick={onClose} className="text-white/40 hover:text:white p-1">
+//           <button onClick={onClose} className="text-white/40 hover.text:white p-1">
 //             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
 //           </button>
 //         </div>
@@ -195,30 +195,84 @@ const ImageViewer = ({ src, onClose }: { src: string; onClose: () => void }) => 
   );
 };
 
-const MiniCircle = ({ score, severity }: { score: number; severity: string }) => {
+// REVISI: Menambahkan prop size untuk mengecilkan ukuran saat export
+// DAN prop isExporting untuk perbaikan posisi teks
+const MiniCircle = ({ score, severity, size = 'md', isExporting = false }: { score: number; severity: string; size?: 'md' | 'sm'; isExporting?: boolean }) => {
   const color = SEVERITY_COLOR_DOT[severity] || "#fff";
   const circumference = 2 * Math.PI * 45;
   const offset = circumference - (score / 100) * circumference;
 
+  const sizeClasses = size === 'sm' ? 'w-7 h-7' : 'w-10 h-10';
+  const textSize = size === 'sm' ? 'text-[9px]' : 'text-[14px]';
+
+  // PENYESUAIAN: Menggunakan absolute positioning untuk export agar teks benar-benar di tengah
+  // Karena html2canvas sering miss-align pada flexbox
+  const textContainerClass = isExporting 
+    ? "absolute top-1.5 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center"
+    : "absolute inset-0 flex items-center justify-center";
+
   return (
-    <div className="relative w-10 h-10 flex-shrink-0">
+    <div className={`relative ${sizeClasses} flex-shrink-0`}>
       <svg className="w-full h-full" viewBox="0 0 100 100">
         <circle cx="50" cy="50" r="45" stroke="rgba(255,255,255,0.1)" strokeWidth="6" fill="none" />
         <g transform="rotate(-90 50 50)">
           <circle cx="50" cy="50" r="45" stroke={color} strokeWidth="6" fill="none" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" />
         </g>
       </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-[14px] font-bold text-white">{Math.round(score)}</span>
+      <div className={textContainerClass}>
+        {/* leading-none ditambahkan untuk konsistensi tinggi teks */}
+        <span className={`${textSize} font-bold text-white leading-none`}>{Math.round(score)}</span>
       </div>
     </div>
   );
 };
 
+// REVISI: SeveritySummaryCard sekarang memiliki mode 'bar graph' untuk export
 const SeveritySummaryCard = ({ severityCount, totalFindings, isExporting }: { severityCount: Record<string, number>; totalFindings: number; isExporting: boolean }) => {
+  
+  // Mode Export: Bar Graph (Vertical)
+  if (isExporting) {
+    const maxCount = Math.max(...Object.values(severityCount), 1); // Ambil nilai tertinggi untuk skala
+    
+    return (
+      <div className="bg-white/5 border border-white/10 rounded-xl p-2 w-full mt-1">
+        <h4 className="text-white font-bold text-xs mb-3 -mt-2 text-center leading-none">Ringkasan Tingkat Keparahan</h4>
+        <div className="flex justify-between items-end h-14 gap-1 px-1">
+          {SEVERITY_ORDER.map((sev) => {
+            const count = severityCount[sev] ?? 0;
+            const heightPct = (count / maxCount) * 100;
+            const color = SEVERITY_COLOR_DOT[sev] || "#fff";
+            // Singkat label untuk export
+            const shortLabel = SEVERITY_LABEL[sev].replace('Sangat ', 'S. ');
+
+            return (
+              <div key={sev} className="flex flex-col items-center flex-1 h-full justify-end">
+                {/* Bar */}
+                <div 
+                  className="w-full rounded-t transition-all duration-300"
+                  style={{ 
+                    height: `${Math.max(heightPct, 5)}%`, // Minimal 2% biar kelihatan
+                    backgroundColor: color,
+                    opacity: count > 0 ? 1 : 0.3
+                  }}
+                />
+                {/* Label & Count di bawah */}
+                <div className="text-center mt-1">
+                   <div className="text-[9px] text-white font-bold leading-none -mt-1">{count}</div>
+                   <div className="text-[6px] text-white/70 mt-0.5">{shortLabel}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // Mode Web View: Grid (Default)
   return (
-    <div className={`bg-white/5 border border-white/10 rounded-xl p-3 w-full ${isExporting ? 'mt-1' : ''}`}>
-      <h4 className={`text-white font-bold text-sm mb-2 text-center leading-none ${isExporting ? '-translate-y-2.5' : ''}`}>Ringkasan Tingkat Keparahan</h4>
+    <div className="bg-white/5 border border-white/10 rounded-xl mb-4 p-3 w-full">
+      <h4 className="text-white font-bold text-sm mb-2 text-center leading-none">Ringkasan Tingkat Keparahan</h4>
       <div className="grid grid-cols-2 gap-1.5">
         {SEVERITY_ORDER.map((sev) => {
           const count = severityCount[sev] ?? 0;
@@ -231,9 +285,9 @@ const SeveritySummaryCard = ({ severityCount, totalFindings, isExporting }: { se
               <div className="w-full">
                 <div className="flex items-center gap-1 mb-0.5 leading-none">
                   <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dotColor }}></div>
-                  <p className={`text-white text-[11px] font-bold leading-none ${isExporting ? '-translate-y-2' : ''}`}>{count} {SEVERITY_LABEL[sev]}</p>
+                  <p className="text-white text-[11px] font-bold leading-none">{count} {SEVERITY_LABEL[sev]}</p>
                 </div>
-                <p className={`text-white/60 text-[10px] pl-2.5 leading-none mt-0.5 ${isExporting ? '-translate-y-2' : ''}`}>{pct}%</p>
+                <p className="text-white/60 text-[10px] pl-2.5 leading-none mt-1">{pct}%</p>
               </div>
             </div>
           );
@@ -504,8 +558,8 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
 
     try {
       try {
-        await fetch('http://localhost:8000/users/register', {
-        // await fetch('/api/users/register', {
+        // await fetch('http://localhost:8000/users/register', {
+        await fetch('/api/users/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: formData.name, email: formData.email, tel: formData.phone })
@@ -521,8 +575,8 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
       if (capturedFiles.center) apiFormData.append('center', capturedFiles.center);
       if (capturedFiles.right) apiFormData.append('right', capturedFiles.right);
 
-      const response = await fetch('http://localhost:8000/analyze-face', { method: 'POST', body: apiFormData });
-      // const response = await fetch('/api/analyze-face', { method: 'POST', body: apiFormData });
+      // const response = await fetch('http://localhost:8000/analyze-face', { method: 'POST', body: apiFormData });
+      const response = await fetch('/api/analyze-face', { method: 'POST', body: apiFormData });
       
       const result = await response.json();
       
@@ -559,7 +613,7 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
       element.style.padding = '20px'; // Reduced from 24px
       element.style.paddingTop = '16px'; // Dikurangi dari 24px agar naik ke atas
       element.style.paddingBottom = '16px';
-      element.style.backgroundColor = '#18181b';
+      element.style.backgroundColor = '#18181b'; // Background di-set di sini via JS
       element.style.gap = '8px'; // Reduced from 16px
 
       // Render Canvas
@@ -707,7 +761,7 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
                         </div>
                         <h3 className="font-display text-xl font-bold text-white mb-3 text-center">Siap Memulai Scan?</h3>
                         <p className="text-white/60 text-sm mb-6 text-center">
-                            Pastikan Anda berada di ruangan dengan pencahayaan yang terang dan tidak memakai kacamata untuk hasil terbaik.
+                            Pastikan Anda berada di ruangan dengan pencahayaan yang terang dan tidak memakai kacamata untuk resultados terbaik.
                         </p>
                         <button onClick={handleStartCameraFromInstruction} className="btn-primary w-full max-w-xs">Oke, Mulai Scan</button>
                     </div>
@@ -737,6 +791,7 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
                         {hasPermission === true ? 'Kamera Aktif' : 'Kamera Tidak Aktif'}
                     </div>
                     {hasPermission === false && ( <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center z-30 p-4 text-center"> <p className="text-white text-sm mb-4">Akses kamera diblokir.</p> <button onClick={enableCamera} className="btn-secondary text-xs py-2 px-4">Coba Lagi</button> </div> )}
+                    {/* PERBAIKAN: Typo items: diubah menjadi items-center */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div className="w-52 h-72 rounded-full border-2 border-[#FF8A9B] opacity-70 shadow-[0_0_15px_rgba(255,138,155,0.3)]"></div>
                     </div>
@@ -784,65 +839,71 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
               {step === 4 && (
               <div className="modal-step active glass-panel rounded-3xl p-6 relative overflow-y-auto max-h-[90vh]">
                   
-                  {/* Area Export */}
-                  <div ref={exportRef} className="relative w-full bg-[#18181b] rounded-xl p-4 mx-auto border border-white/10 mb-4">
+                  {/* Area Export - REVISI: Hapus p-4, mx-auto, mb-4 agar hilang margin di web */}
+                  <div ref={exportRef} className="relative w-full rounded-xl">
                       
-                      {/* Header - Margin dihilangkan saat export */}
-                      <div className={`text-center ${isExporting ? 'mb-0 -mt-0' : 'mb-4'}`}>
-                          <h3 className="font-display text-3xl font-medium text-[#FF8A9B]">Hasil Analisis MirraAI</h3>
-                          {/* PERUBAHAN: Tanggal Dinamis */}
-                          <p className="text-white/40 text-sm mt-1">{currentDateStr}</p>
-                      </div>
-
-                      {/* Score Circle - Margin dihilangkan saat export */}
-                      <div className={`flex justify-center ${isExporting ? '-mb-6' : 'mb-4'}`}>
-                        <div className={`relative ${isExporting ? 'w-24 h-24 mt-2' : 'w-28 h-28'} rounded-full border-4 border-[rgba(255,138,155,0.2)] bg-[rgba(255,138,155,0.05)] flex items-center justify-center`}>
-
-                          <svg
-                            className="absolute inset-0 w-full h-full pointer-events-none"
-                            viewBox="0 0 100 100"
-                          >
-                            <g transform="rotate(-90 50 50)">
-                              <circle
-                                id="score-circle"
-                                cx="50"
-                                cy="50"
-                                r="45"
-                                stroke="#FF8A9B"
-                                strokeWidth="3"
-                                strokeDasharray="283"
-                                strokeDashoffset="283"
-                                strokeLinecap="round"
-                                fill="none"
-                              />
-                            </g>
-                          </svg>
-
-                          {/* TEXT CENTER FIX */}
-                          <div className="text-center leading-tight">
-                            <div
-                              className={`font-display text-4xl font-bold text-[#FF8A9B] mb-2 ${
-                                isExporting ? '-translate-y-2 mb-0' : ''
-                              }`}
-                            >
-                              {score}
-                            </div>
-                            <div className={`text-[#FF8A9B] opacity-60 text-[11px] mb-4 ${isExporting ? 'text-[9px] pb-4' : ''}`}>
-                              Skor Kesehatan
-                            </div>
+                      {/* WRAPPER HEADER & SCORE - REVISI: Layout berubah saat export */}
+                      <div className={`flex ${isExporting ? 'flex-row items-center justify-between gap-2' : 'flex-col'}`}>
+                          
+                          {/* Header Section */}
+                          <div className={`${isExporting ? 'text-left flex-1 -mt-2' : 'text-center mb-4'}`}>
+                              {/* REVISI: Ukuran font dikecilkan saat export agar tidak wrap/turun ke bawah */}
+                              <h3 className={`font-display font-medium text-[#FF8A9B] ${isExporting ? 'text-3xl leading-none mb-2' : 'text-3xl'}`}>Hasil Analisis MirraAI</h3>
+                              {/* PERUBAHAN: Tanggal Dinamis */}
+                              <p className="text-white/40 text-sm mt-1">{currentDateStr}</p>
                           </div>
 
-                        </div>
+                          {/* Score Circle Section - REVISI: Posisi disesuaikan saat export */}
+                          <div className={`${isExporting ? 'flex-shrink-0 mt-4' : 'flex justify-center mb-4'}`}>
+                            <div className={`relative ${isExporting ? 'w-[85px] h-[85px]' : 'w-28 h-28'} rounded-full border-4 border-[rgba(255,138,155,0.2)] bg-[rgba(255,138,155,0.05)] flex items-center justify-center`}>
+
+                              <svg
+                                className="absolute inset-0 w-full h-full pointer-events-none"
+                                viewBox="0 0 100 100"
+                              >
+                                <g transform="rotate(-90 50 50)">
+                                  <circle
+                                    id="score-circle"
+                                    cx="50"
+                                    cy="50"
+                                    r="45"
+                                    stroke="#FF8A9B"
+                                    strokeWidth="3"
+                                    strokeDasharray="283"
+                                    strokeDashoffset="283"
+                                    strokeLinecap="round"
+                                    fill="none"
+                                  />
+                                </g>
+                              </svg>
+
+                              {/* TEXT CENTER FIX - REVISI: MENAMBAHKAN /100 */}
+                              <div className="text-center leading-tight">
+                                <div
+                                  className={`font-display text-4xl font-bold text-[#FF8A9B] mb-2 ${
+                                    isExporting ? '-translate-y-2 mb-0' : ''
+                                  }`}
+                                >
+                                  {score}
+                                </div>
+                                {/* PERBAIKAN: Teks dinamis */}
+                                <div className={`text-[#FF8A9B] opacity-60 text-[11px] mb-2 ${isExporting ? 'text-[10px] pb-5' : ''}`}>
+                                  dari 100
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
                       </div>
                       
                       {/* Foto Hasil Scan */}
-                      <div className={`${isExporting ? '-mb-1' : 'mb-3'}`}>
-                          <h4 className="text-white font-bold text-base mb-2">Foto Hasil Scan</h4>
+                      <div className={`${isExporting ? '-mt-4 -mb-1' : 'mb-3'}`}>
+                          <h4 className={`text-white font-bold text-sm mb-2 ${isExporting ? 'mb-3' : ''}`}>Foto Hasil Scan</h4>
                           <div className="grid grid-cols-3 gap-2">
                               {overlayImages.map((img) => (
                                   <div 
                                     key={img.pose} 
-                                    className="photo-result-container bg-black/40 rounded overflow-hidden border border-white/10 relative"
+                                    className={`photo-result-container bg-black/40 rounded-xl overflow-hidden border border-white/10 relative ${isExporting ? 'rounded-xl' : ''}`}
                                     // FIX: Hanya pakai aspectRatio 1/1, biarkan grid yg atur lebar
                                     style={{ aspectRatio: '1 / 1' }}
                                     onClick={() => setViewingImage(img.src)}
@@ -851,7 +912,7 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
                                         src={img.src} 
                                         alt={img.pose} 
                                         // FIX: Tambahkan w-full h-full agar memenuhi container kotak
-                                        className="w-full h-full object-cover absolute inset-0" 
+                                        className="w-full h-full object-cover absolute inset-0"
                                       />
                                       {!isExporting && (
                                       <span
@@ -878,12 +939,39 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
                           </div>
                       </div>
 
-                      {/* Severity Summary Card */}
+                      {/* ============================================================ */}
+                      {/* REVISI: URUTAN UNTUK EXPORT (SEVERITY DULU, LALU SUMMARY) */}
+                      {/* ============================================================ */}
+                      
+                      {/* 1. Severity Summary Card (BAR GRAPH) - Diletakkan di atas */}
                       <SeveritySummaryCard 
                         severityCount={totalSeverityCounts} 
                         totalFindings={totalFindings} 
                         isExporting={isExporting} 
                       />
+
+                      {/* 2. Hasil Analisa (Summary Accordion) - Diletakkan di bawah Severity, didalam card */}
+                      {/* REVISI: Padding dan font size dikecilkan saat export agar tidak kebawah */}
+                      {/* FIX BUG: Menghapus -space-y-4 dan menambah padding agar teks tidak terpotong */}
+                      {isExporting && aggregatedSummary.length > 0 && (
+                        <div className="bg-white/5 border border-white/10 rounded-xl p-2 w-full">
+                          <h4 className="text-white font-bold text-xs mb-3 -mt-2">Hasil Analisa</h4>
+                          <div className="space-y-1.5">
+                              {aggregatedSummary.slice(0, 2).map((item) => (
+                                <div key={item.label} className="bg-white/5 border border-white/10 rounded-lg p-2 flex items-center justify-between gap-2">
+                                  <div className="flex-1 -mt-4">
+                                    <p className="text-white text-[11px] font-medium leading-tight">
+                                      {item.label} – <span className="text-[#FF8A9B]">{SEVERITY_LABEL[item.severity]}</span>
+                                    </p>
+                                    <p className="text-white/60 text-[9px] leading-tight mt-1">Terdeteksi {item.count} kali</p>
+                                  </div>
+                                  {/* REVISI: Ukuran MiniCircle diperkecil untuk export */}
+                                  <MiniCircle score={item.avg_severity_percentage} severity={item.severity} size="sm" isExporting={isExporting} />
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      )}
                       
                       {/* ===== BRANDING & CTA (EXPORT ONLY) ===== */}
                       {isExporting && (
@@ -918,13 +1006,17 @@ const ScanModal = ({ isOpen, onClose }: ScanModalProps) => {
                       )}
                   </div>
 
-                  {/* Summary Accordion */}
-                  <SummaryAccordion aggregatedSummary={aggregatedSummary} expandedLabel={expandedLabel} setExpandedLabel={setExpandedLabel} isPremium={true} />
+                  {/* Summary Accordion (Web View Only) */}
+                  {!isExporting && (
+                    <SummaryAccordion aggregatedSummary={aggregatedSummary} expandedLabel={expandedLabel} setExpandedLabel={setExpandedLabel} isPremium={true} />
+                  )}
 
                   {/* ============================================================ */}
-                  {/* REKOMENDASI PERAWATAN - LETAKKAN SETELAH SUMMARY ACCORDION */}
+                  {/* REKOMENDASI PERAWATAN - WEB VIEW ONLY */}
                   {/* ============================================================ */}
-                  <RecommendationSection aggregatedSummary={aggregatedSummary} />
+                  {!isExporting && (
+                    <RecommendationSection aggregatedSummary={aggregatedSummary} />
+                  )}
 
                   {/* Tombol Aksi */}
                   <div className="mt-4 space-y-2">
