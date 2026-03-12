@@ -14,7 +14,8 @@ import Image from '@tiptap/extension-image';
 import Sidebar from '../components/Sidebar';
 
 // --- KONFIGURASI API ---
-const API_BASE_URL = 'http://localhost:8000';
+// const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '/api';
 
 // --- TIPE DATA ---
 interface Article {

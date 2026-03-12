@@ -9,7 +9,8 @@ interface NavbarProps {
 }
 
 // --- KONFIGURASI API ---
-const API_BASE_URL = 'http://localhost:8000';
+// const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '/api';
 
 // Interface untuk data dari API
 interface Article {
