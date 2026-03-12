@@ -1,6 +1,6 @@
+// src/components/Navbar.tsx
 import { useState, useEffect } from 'react';
-
-// IMPORT 2 GAMBAR TERPISAH
+import { Link } from 'react-router-dom';
 import logoIcon from '../assets/only-logo.png';
 import logoText from '../assets/only-text.png';
 
@@ -36,17 +36,19 @@ const Navbar = ({ openModal }: NavbarProps) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
             <div className="flex items-center justify-between">
                 
-                <a href="#" className="flex items-center gap-0 sm:gap-1 z-10">
+                <Link to="/" className="flex items-center gap-0 sm:gap-1 z-10">
                     <img src={logoIcon} alt="Mirra Sense Icon" className="h-10 sm:h-12 w-auto object-contain" />
                     <img src={logoText} alt="Mirra Sense Text" className="h-6 sm:h-8 w-auto object-contain" />
-                </a>
+                </Link>
 
                 <div className="hidden lg:flex items-center gap-8">
-                    <a href="#problem" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Tantangan</a>
-                    <a href="#solution" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Solusi</a>
-                    <a href="#how-it-works" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Cara Kerja</a>
-                    <a href="#benefits" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Keuntungan</a>
-                    <a href="#comparison" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Perbandingan</a>
+                    <a href="/#problem" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Tantangan</a>
+                    <a href="/#solution" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Solusi</a>
+                    <a href="/#how-it-works" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Cara Kerja</a>
+                    <a href="/#benefits" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Keuntungan</a>
+                    <a href="/#comparison" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Perbandingan</a>
+                    {/* Link ke halaman Blog */}
+                    <Link to="/blog" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Blog</Link>
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-4">
@@ -58,7 +60,7 @@ const Navbar = ({ openModal }: NavbarProps) => {
                         )}
                     </button>
 
-                    <button onClick={openModal} className="btn-primary text-xs sm:text-sm py-2 px-4 sm:py-2 sm:px-6 hidden md:block">Coba Sekarang</button>
+                    <button onClick={openModal} className="btn-primary text-xs sm:text-sm py-2 px-4 sm:py-2 sm:px-6 hidden md:block">Masuk</button>
                     
                     <button onClick={() => setIsOpen(!isOpen)} className="lg:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full glass-panel flex items-center justify-center hover:scale-110 transition-transform z-10">
                         {isOpen ? (
@@ -72,12 +74,15 @@ const Navbar = ({ openModal }: NavbarProps) => {
         </div>
 
         <div className={`lg:hidden mobile-menu-container flex flex-col p-6 space-y-2 ${isOpen ? 'active' : ''}`}>
-            <a href="#problem" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Tantangan</a>
-            <a href="#solution" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Solusi</a>
-            <a href="#how-it-works" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Cara Kerja</a>
-            <a href="#benefits" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Keuntungan</a>
-            <a href="#comparison" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Perbandingan</a>
-            <button onClick={() => { openModal(); setIsOpen(false); }} className="btn-primary w-full text-center mt-4 text-sm sm:text-base py-3">Coba Sekarang</button>
+            <a href="/#problem" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Tantangan</a>
+            <a href="/#solution" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Solusi</a>
+            <a href="/#how-it-works" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Cara Kerja</a>
+            <a href="/#benefits" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Keuntungan</a>
+            <a href="/#comparison" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Perbandingan</a>
+            {/* Link Mobile ke Blog */}
+            <Link to="/blog" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Blog</Link>
+            
+            <button onClick={() => { openModal(); setIsOpen(false); }} className="btn-primary w-full text-center mt-4 text-sm sm:text-base py-3">Masuk</button>
         </div>
     </nav>
     );
