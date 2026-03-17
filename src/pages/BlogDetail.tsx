@@ -18,6 +18,7 @@ interface Article {
     image: string;
     published_at: string; // ISO Date string
     author_id: number;
+    views: number;
     // Untuk keperluan frontend saja
     tags?: string[];
     author?: string;
@@ -37,13 +38,19 @@ const BlogDetail = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (!slug) return;
+
+        const controller = new AbortController();
+        const signal = controller.signal;
+
         const fetchArticle = async () => {
-            if (!slug) return;
             setLoading(true);
             setError(null);
             
             try {
-                const response = await fetch(`${API_BASE_URL}/blog/${slug}`);
+                const response = await fetch(`${API_BASE_URL}/blog/${slug}`, {
+                    signal: signal
+                });
                 
                 if (!response.ok) {
                     if (response.status === 404) {
@@ -54,30 +61,40 @@ const BlogDetail = () => {
                 
                 const data: Article = await response.json();
                 
-                // Proses data
                 let imageUrl = data.image;
-                // Tambahkan Base URL jika path relatif
                 if (imageUrl && !imageUrl.startsWith('http')) {
                     imageUrl = `${API_BASE_URL}/${imageUrl}`;
                 }
 
                 const processedData = {
                     ...data,
-                    image: imageUrl, // Gunakan URL yang sudah lengkap
+                    image: imageUrl,
                     tags: data.tag ? data.tag.split(',').map(t => t.trim()) : [],
-                    author: "Admin MirraSense" // Default author
+                    author: "Admin MirraSense",
+                    views: data.views || 0
                 };
                 
-                setArticle(processedData);
+                if (!signal.aborted) {
+                    // [PERBAIKAN TYPO] processdData -> processedData
+                    setArticle(processedData);
+                }
             } catch (err: any) {
-                console.error("Fetch error:", err);
-                setError(err.message);
+                if (err.name !== 'AbortError') {
+                    console.error("Fetch error:", err);
+                    setError(err.message);
+                }
             } finally {
-                setLoading(false);
+                if (!signal.aborted) {
+                    setLoading(false);
+                }
             }
         };
 
         fetchArticle();
+
+        return () => {
+            controller.abort();
+        };
     }, [slug]);
 
     if (loading) {
@@ -110,7 +127,6 @@ const BlogDetail = () => {
         );
     }
 
-    // Share URL Logic
     const shareUrl = window.location.href;
     const shareText = `Baca artikel menarik ini: ${article.title}`;
 
@@ -118,15 +134,19 @@ const BlogDetail = () => {
         <div className="min-h-screen relative text-[var(--text-main)]">
             <CanvasBackground />
 
-            {/* Floating Back Button - Glass Style */}
-            <div className="fixed top-6 left-6 z-50 flex items-center gap-3">
+            {/* Floating Back Button - Responsif */}
+            <div className="fixed top-6 left-6 z-50">
                 <button 
                     onClick={() => navigate('/blog')} 
-                    className="p-3 rounded-full glass-panel hover:scale-110 transition-all group"
+                    className="flex items-center gap-2 p-2 pr-4 rounded-full glass-panel hover:scale-105 transition-all group shadow-lg border border-white/10 hover:border-[var(--accent)]"
                 >
-                    <svg className="w-5 h-5 text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    <div className="p-1.5 rounded-full bg-white/5 group-hover:bg-[var(--accent)] transition-colors">
+                        <svg className="w-4 h-4 text-[var(--text-main)] group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                    </div>
+                    <span className="text-sm font-medium text-[var(--text-main)] group-hover:text-[var(--accent)] transition-colors">Kembali</span>
                 </button>
-                <span className="hidden md:block text-sm text-muted">Kembali</span>
             </div>
 
             {/* Hero Image Header */}
@@ -145,6 +165,16 @@ const BlogDetail = () => {
                         <span className="text-muted text-xs">{formatDateDetail(article.published_at)}</span>
                         <span className="text-muted">•</span>
                         <span className="text-muted text-xs">{article.author}</span>
+                        
+                        {/* Tampilan Views di Detail */}
+                        <span className="text-muted">•</span>
+                        <div className="flex items-center gap-1.5 text-xs text-muted">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span>{article.views} views</span>
+                        </div>
                     </div>
 
                     {/* Title */}
@@ -177,7 +207,7 @@ const BlogDetail = () => {
                         </button>
                     </div>
 
-                    {/* Article Body - Dynamic Colors */}
+                    {/* Article Body */}
                     <div 
                         className="prose prose-lg max-w-none 
                         prose-headings:font-display prose-headings:text-[var(--text-main)] prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4

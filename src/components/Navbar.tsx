@@ -47,8 +47,8 @@ const Navbar = ({ openModal }: NavbarProps) => {
                     <a href="/#how-it-works" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Cara Kerja</a>
                     <a href="/#benefits" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Keuntungan</a>
                     <a href="/#comparison" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Perbandingan</a>
-                    {/* Link ke halaman Blog */}
-                    <Link to="/blog" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Blog</Link>
+                    {/* UBAH: Mengarah ke section #articles */}
+                    <a href="/#articles" className="text-sm hover:text-[#FF8A9B] transition-colors duration-300">Artikel</a>
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-4">
@@ -79,8 +79,8 @@ const Navbar = ({ openModal }: NavbarProps) => {
             <a href="/#how-it-works" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Cara Kerja</a>
             <a href="/#benefits" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Keuntungan</a>
             <a href="/#comparison" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Perbandingan</a>
-            {/* Link Mobile ke Blog */}
-            <Link to="/blog" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Blog</Link>
+            {/* UBAH: Mengarah ke section #articles */}
+            <a href="/#articles" onClick={() => setIsOpen(false)} className="block text-base sm:text-lg py-2 sm:py-3 px-4 rounded-xl hover:bg-white/5 transition-colors">Artikel</a>
             
             <button onClick={() => { openModal(); setIsOpen(false); }} className="btn-primary w-full text-center mt-4 text-sm sm:text-base py-3">Masuk</button>
         </div>

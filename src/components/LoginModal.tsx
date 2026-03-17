@@ -42,7 +42,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
                         <input 
                             type="email" 
                             className="input-style rounded-xl"
-                            placeholder="admin@mirra.com"
+                            placeholder="mirrasense@gmail.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required

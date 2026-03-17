@@ -1,21 +1,81 @@
 // src/pages/LandingPage.tsx
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ScanModal from '../components/ScanModal';
-// LoginModal dihapus dari import karena sekarang di-render di App.tsx
 import CanvasBackground from '../components/CanvasBackground';
 
-// Definisikan interface props
 interface LandingPageProps {
   openLoginModal: () => void;
 }
 
-function LandingPage({ openLoginModal }: LandingPageProps) {
-    // State untuk modal scan (tetap lokal karena hanya dipakai di halaman ini)
-    const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+// --- KONFIGURASI API ---
+// const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '/api';
 
-    // useEffect untuk animasi scroll
+interface Article {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  category: string;
+  tag: string;
+  image: string;
+  published_at: string;
+  author_id: number;
+  views: number;
+  created_at: string;
+  excerpt?: string;
+  tags?: string[];
+  author?: string;
+}
+
+function LandingPage({ openLoginModal }: LandingPageProps) {
+    const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+    const [articles, setArticles] = useState<Article[]>([]);
+    const [loadingArticles, setLoadingArticles] = useState(true);
+
+    useEffect(() => {
+        const fetchArticles = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/blog/list`);
+                if (!response.ok) throw new Error('Failed to fetch');
+                
+                const data: Article[] = await response.json();
+                
+                const processedData = data.map(article => {
+                    const plainText = article.content.replace(/<[^>]*>/g, '');
+                    const excerpt = plainText.substring(0, 120);
+                    const tags = article.tag.split(',').map(t => t.trim());
+
+                    let imageUrl = article.image;
+                    if (imageUrl && !imageUrl.startsWith('http')) {
+                        imageUrl = `${API_BASE_URL}/${imageUrl}`;
+                    }
+
+                    return {
+                        ...article,
+                        image: imageUrl,
+                        excerpt,
+                        tags,
+                        author: "Admin MirraSense",
+                        views: article.views || 0
+                    };
+                });
+
+                const sortedData = processedData.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+                setArticles(sortedData.slice(0, 6));
+            } catch (err) {
+                console.error("Failed to fetch articles:", err);
+            } finally {
+                setLoadingArticles(false);
+            }
+        };
+
+        fetchArticles();
+    }, []);
+
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -49,7 +109,6 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
         return () => observer.disconnect();
     }, []);
 
-    // useEffect untuk dekorasi background
     useEffect(() => {
         const bgDecor = document.getElementById('bg-decorations');
         if (bgDecor) {
@@ -66,16 +125,78 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
         }
     }, []);
 
+    const formatDate = (dateStr: string) => {
+        const date = new Date(dateStr);
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        return {
+            dateNum: date.getDate(),
+            month: months[date.getMonth()],
+            year: date.getFullYear()
+        };
+    };
+
     return (
         <div className="relative">
             <CanvasBackground />
+            
+            <style>{`
+                @keyframes float-soft {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-8px); }
+                }
+                @keyframes glow-breath {
+                    0%, 100% {
+                        box-shadow: 0 0 5px rgba(255, 138, 155, 0.4),
+                                    0 0 20px rgba(255, 138, 155, 0.2),
+                                    0 0 30px rgba(255, 138, 155, 0.1);
+                    }
+                    50% {
+                        box-shadow: 0 0 15px rgba(255, 138, 155, 0.8),
+                                    0 0 40px rgba(255, 138, 155, 0.5),
+                                    0 0 60px rgba(255, 138, 155, 0.3);
+                    }
+                }
+                @keyframes shine-sweep {
+                    0% { left: -100%; opacity: 0; }
+                    20% { opacity: 0.6; }
+                    100% { left: 150%; opacity: 0; }
+                }
+                .btn-amazing {
+                    position: relative;
+                    overflow: hidden;
+                    animation: float-soft 4s ease-in-out infinite, glow-breath 3s ease-in-out infinite;
+                    transform-style: preserve-3d;
+                }
+                .btn-amazing::after {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                    transform: skewX(-20deg);
+                    animation: shine-sweep 4s infinite ease-in-out;
+                    animation-delay: 2s;
+                }
+                .btn-amazing:hover {
+                    animation: glow-breath 1.5s ease-in-out infinite;
+                    box-shadow: 0 0 25px rgba(255, 138, 155, 0.9), 0 0 50px rgba(255, 138, 155, 0.6);
+                    transform: translateY(-2px) scale(1.02);
+                }
+                .btn-amazing span {
+                    position: relative;
+                    z-index: 10;
+                }
+                .scrollbar-hide::-webkit-scrollbar { display: none; }
+                .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+            `}</style>
         
             <div id="bg-decorations" className="bg-decorations">
                 <div className="orb orb-1"></div>
                 <div className="orb orb-2"></div>
             </div>
 
-        {/* Navbar menerima fungsi openLoginModal dari props */}
         <Navbar openModal={openLoginModal} />
 
         <main className="relative z-10">
@@ -87,9 +208,16 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                         <div className="space-y-6 sm:space-y-8 relative z-10 text-center lg:text-left">
                             <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-medium leading-[1.1] tracking-tight reveal active delay-1">Unlock the Future of<br/><span className="italic text-gradient">Your Skin's Secret</span></h1>
                             <p className="reveal active delay-2 text-base sm:text-lg opacity-70 max-w-xl leading-relaxed mx-auto lg:mx-0">Platform diagnostik berbasis Artificial Intelligence yang merevolusi layanan perawatan kulit dengan akurasi presisi, real-time monitoring, dan personalisasi tanpa tertandingi.</p>
+                            
                             <div className="reveal active delay-3 flex flex-wrap gap-3 sm:gap-5 justify-center lg:justify-start">
-                                <button onClick={() => setIsScanModalOpen(true)} className="btn-primary text-sm sm:text-base">Scan Kulitmu Sekarang</button>
+                                <button 
+                                    onClick={() => setIsScanModalOpen(true)} 
+                                    className="btn-primary btn-amazing text-sm sm:text-base rounded-full px-8 py-3 border border-transparent"
+                                >
+                                    <span>Scan Kulitmu Sekarang</span>
+                                </button>
                             </div>
+                            
                             <div className="reveal active delay-4 flex items-center justify-center lg:justify-start gap-6 sm:gap-10 pt-6 sm:pt-8 border-t border-[rgba(255,255,255,0.1)] mt-6 sm:mt-8">
                                 <div>
                                     <div className="font-display text-2xl sm:text-3xl lg:text-4xl font-semibold text-[#FF8A9B] counter" data-target="98">0</div>
@@ -172,7 +300,7 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
             </section>
 
             {/* --- PROBLEM SECTION --- */}
-            <section id="problem" className="py-16 sm:py-24 md:py-32 relative">
+            <section id="problem" className="py-16 sm:py-20 md:py-24 relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="text-center mb-12 sm:mb-16 md:mb-20">
                         <div className="glass-panel px-4 sm:px-6 py-1.5 sm:py-2 rounded-full inline-block mb-4 sm:mb-6 reveal">Tantangan Utama</div>
@@ -181,7 +309,6 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                         </h2>
                     </div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-                        {/* Card 1 */}
                         <div className="glass-panel p-5 sm:p-6 md:p-8 rounded-[24px] sm:rounded-[28px] md:rounded-[32px] reveal delay-1 group hover:border-[#FF8A9B] transition-colors">
                             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-[rgba(255,138,155,0.1)] flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-500">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF8A9B" strokeWidth="1.5" className="sm:w-7 sm:h-7 md:w-8 md:h-8">
@@ -193,7 +320,6 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                             <div className="text-2xl sm:text-3xl font-display text-[#FF8A9B]">67%</div>
                             <div className="text-[10px] sm:text-xs opacity-40">Variasi Diagnosis</div>
                         </div>
-                        {/* Card 2 */}
                         <div className="glass-panel p-5 sm:p-6 md:p-8 rounded-[24px] sm:rounded-[28px] md:rounded-[32px] reveal delay-2 group hover:border-[#FF8A9B] transition-colors">
                             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-[rgba(255,138,155,0.1)] flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-500">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF8A9B" strokeWidth="1.5" className="sm:w-7 sm:h-7 md:w-8 md:h-8">
@@ -205,7 +331,6 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                             <div className="text-2xl sm:text-3xl font-display text-[#FF8A9B]">82%</div>
                             <div className="text-[10px] sm:text-xs opacity-40">Tidak Patuh</div>
                         </div>
-                        {/* Card 3 */}
                         <div className="glass-panel p-5 sm:p-6 md:p-8 rounded-[24px] sm:rounded-[28px] md:rounded-[32px] reveal delay-3 group hover:border-[#FF8A9B] transition-colors sm:col-span-2 lg:col-span-1">
                             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-[rgba(255,138,155,0.1)] flex items-center justify-center mb-4 sm:mb-6 group-hover:scale-110 transition-transform duration-500">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF8A9B" strokeWidth="1.5" className="sm:w-7 sm:h-7 md:w-8 md:h-8">
@@ -222,10 +347,9 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
             </section>
 
             {/* --- SOLUTION SECTION --- */}
-            <section id="solution" className="py-16 sm:py-24 md:py-32 relative overflow-hidden">
+            <section id="solution" className="py-16 sm:py-20 md:py-24 relative overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="grid lg:grid-cols-2 gap-10 sm:gap-16 md:gap-20 items-center">
-                        {/* Image/Animation Side */}
                         <div className="reveal-left order-2 lg:order-1">
                             <div className="glass-panel p-1.5 sm:p-2 rounded-[24px] sm:rounded-[32px]">
                                 <div className="aspect-square rounded-[20px] sm:rounded-[26px] relative overflow-hidden flex items-center justify-center bg-[rgba(136,14,49,0.2)]">
@@ -239,7 +363,6 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                                 </div>
                             </div>
                         </div>
-                        {/* Text Side */}
                         <div className="reveal-right order-1 lg:order-2 space-y-6 sm:space-y-8 text-center lg:text-left">
                             <div className="glass-panel px-4 sm:px-6 py-1.5 sm:py-2 rounded-full inline-block text-xs sm:text-sm">Solusi MIRRA SENSE</div>
                             <h2 className="font-display text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-medium">
@@ -281,14 +404,13 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
             </section>
 
             {/* --- HOW IT WORKS SECTION --- */}
-            <section id="how-it-works" className="py-16 sm:py-24 md:py-32 relative">
+            <section id="how-it-works" className="py-16 sm:py-20 md:py-24 relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="text-center mb-12 sm:mb-16 md:mb-20">
                         <div className="glass-panel px-4 sm:px-6 py-1.5 sm:py-2 rounded-full inline-block mb-4 sm:mb-6 reveal">Cara Kerja</div>
                         <h2 className="font-display text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-medium reveal delay-1">Tiga Langkah Menuju<br/><span className="italic text-gradient">Kulit Sempurna</span></h2>
                     </div>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                        {/* Step 1 */}
                         <div className="reveal delay-1 group h-full">
                             <div className="glass-panel p-6 rounded-[28px] h-full flex flex-col hover:border-[#FF8A9B] transition-colors relative overflow-hidden">
                                 <div className="anim-box">
@@ -300,7 +422,7 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                                 <div className="relative z-10 flex-1 flex flex-col">
                                     <div className="font-display text-5xl text-white/5 absolute -top-2 -right-2">01</div>
                                     <h3 className="font-display text-xl font-medium mb-3">Analisis Presisi</h3>
-                                    <p className="text-muted text-sm leading-relaxed mb-4 flex-grow">Self-scan atau dipandu scan wajah. AI menganalisis lebih dari 10 kondisi kulit dan mengeluarkan Skor Kesehatan 0-100.</p>
+                                    <p className="text-muted text-sm leading-relaxed mb-4 flex-grow">Self-scan atau dipandu scan wajah. AI menganalisis lebih dari 10 kondisi kulit dan mengeluarkan Skor Kesehatan 0-100。</p>
                                     <div className="flex items-center gap-2 text-[#FF8A9B] text-sm font-medium">
                                         <span>Radar Detection</span>
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -308,7 +430,6 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                                 </div>
                             </div>
                         </div>
-                        {/* Step 2 */}
                         <div className="reveal delay-2 group h-full">
                             <div className="glass-panel p-6 rounded-[28px] h-full flex flex-col hover:border-[#FF8A9B] transition-colors relative overflow-hidden">
                                 <div className="anim-box">
@@ -322,7 +443,7 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                                 <div className="relative z-10 flex-1 flex flex-col">
                                     <div className="font-display text-5xl text-white/5 absolute -top-2 -right-2">02</div>
                                     <h3 className="font-display text-xl font-medium mb-3">Rekomendasi Personal</h3>
-                                    <p className="text-muted text-sm leading-relaxed mb-4 flex-grow">Aplikasi merekomendasikan layanan dan produk skincare. Data terekam ke Dashboard Klinik untuk ditinjau dokter.</p>
+                                    <p className="text-muted text-sm leading-relaxed mb-4 flex-grow">Aplikasi merekomendasikan layanan dan produk skincare. Data terekam ke Dashboard Klinik untuk ditinjau dokter。</p>
                                     <div className="flex items-center gap-2 text-[#FF8A9B] text-sm font-medium">
                                         <span>Neural Processing</span>
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -330,7 +451,6 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                                 </div>
                             </div>
                         </div>
-                        {/* Step 3 */}
                         <div className="reveal delay-3 group h-full sm:col-span-2 lg:col-span-1">
                             <div className="glass-panel p-6 rounded-[28px] h-full flex flex-col hover:border-[#FF8A9B] transition-colors relative overflow-hidden">
                                 <div className="anim-box">
@@ -345,7 +465,7 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                                 <div className="relative z-10 flex-1 flex flex-col">
                                     <div className="font-display text-5xl text-white/5 absolute -top-2 -right-2">03</div>
                                     <h3 className="font-display text-xl font-medium mb-3">Monitoring Berkelanjutan</h3>
-                                    <p className="text-muted text-sm leading-relaxed mb-4 flex-grow">Tracking Harian dan Before/After. Dokter memantau progres visual dan respons pasien dari jarak jauh.</p>
+                                    <p className="text-muted text-sm leading-relaxed mb-4 flex-grow">Tracking Harian dan Before/After. Dokter memantau progres visual dan respons pasien dari jarak jauh。</p>
                                     <div className="flex items-center gap-2 text-[#FF8A9B] text-sm font-medium">
                                         <span>Real-time Analytics</span>
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -358,7 +478,7 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
             </section>
 
             {/* --- BENEFITS SECTION --- */}
-            <section id="benefits" className="py-16 sm:py-24 md:py-32 relative">
+            <section id="benefits" className="py-16 sm:py-20 md:py-24 relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="text-center mb-12 sm:mb-16">
                         <h2 className="font-display text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-medium reveal">
@@ -366,44 +486,40 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                         </h2>
                     </div>
                     <div className="grid sm:grid-cols-2 gap-6 md:gap-8">
-                        {/* Benefit 1 */}
                         <div className="glass-panel rounded-2xl p-8 md:p-10 flex flex-col sm:flex-row gap-6 reveal delay-1 group hover:scale-[1.01] transition-transform">
                             <div className="w-14 h-14 rounded-2xl bg-[rgba(255,138,155,0.1)] flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
                                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8A9B" strokeWidth="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                             </div>
                             <div className="text-center sm:text-left">
                                 <h3 className="font-display text-lg sm:text-xl font-medium mb-2 sm:mb-3 text-[#FF8A9B]">Akurasi Maksimal</h3>
-                                <p className="text-muted text-xs sm:text-sm leading-relaxed">Menguatkan objektivitas dokter melalui hasil analisis AI yang ilmiah.</p>
+                                <p className="text-muted text-xs sm:text-sm leading-relaxed">Menguatkan objektivitas dokter melalui hasil analisis AI yang ilmiah。</p>
                             </div>
                         </div>
-                        {/* Benefit 2 */}
                         <div className="glass-panel rounded-2xl p-8 md:p-10 flex flex-col sm:flex-row gap-6 reveal delay-2 group hover:scale-[1.01] transition-transform">
                             <div className="w-14 h-14 rounded-2xl bg-[rgba(255,138,155,0.1)] flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
                                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8A9B" strokeWidth="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                             </div>
                             <div className="text-center sm:text-left">
                                 <h3 className="font-display text-lg sm:text-xl font-medium mb-2 sm:mb-3 text-[#FF8A9B]">Retensi Meningkat</h3>
-                                <p className="text-muted text-xs sm:text-sm leading-relaxed">Bukti visual yang terukur mendorong repeat service dan loyalitas.</p>
+                                <p className="text-muted text-xs sm:text-sm leading-relaxed">Bukti visual yang terukur mendorong repeat service dan loyalitas。</p>
                             </div>
                         </div>
-                        {/* Benefit 3 */}
                         <div className="glass-panel rounded-2xl p-8 md:p-10 flex flex-col sm:flex-row gap-6 reveal delay-3 group hover:scale-[1.01] transition-transform">
                             <div className="w-14 h-14 rounded-2xl bg-[rgba(255,138,155,0.1)] flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
                                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8A9B" strokeWidth="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
                             </div>
                             <div className="text-center sm:text-left">
                                 <h3 className="font-display text-lg sm:text-xl font-medium mb-2 sm:mb-3 text-[#FF8A9B]">Wawasan Real-Time</h3>
-                                <p className="text-muted text-xs sm:text-sm leading-relaxed">Dashboard analitik untuk strategi pemasaran dan pengembangan layanan.</p>
+                                <p className="text-muted text-xs sm:text-sm leading-relaxed">Dashboard analitik untuk strategi pemasaran dan pengembangan layanan。</p>
                             </div>
                         </div>
-                        {/* Benefit 4 */}
                         <div className="glass-panel rounded-2xl p-8 md:p-10 flex flex-col sm:flex-row gap-6 reveal delay-4 group hover:scale-[1.01] transition-transform">
                             <div className="w-14 h-14 rounded-2xl bg-[rgba(255,138,155,0.1)] flex items-center justify-center flex-shrink-0 mx-auto sm:mx-0">
                                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#FF8A9B" strokeWidth="1.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                             </div>
                             <div className="text-center sm:text-left">
                                 <h3 className="font-display text-lg sm:text-xl font-medium mb-2 sm:mb-3 text-[#FF8A9B]">Skalabilitas Tanpa Batas</h3>
-                                <p className="text-muted text-xs sm:text-sm leading-relaxed">Pantau kepatuhan pasien dari jarak jauh dengan efisien.</p>
+                                <p className="text-muted text-xs sm:text-sm leading-relaxed">Pantau kepatuhan pasien dari jarak jauh dengan efisien。</p>
                             </div>
                         </div>
                     </div>
@@ -411,7 +527,7 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
             </section>
 
             {/* --- COMPARISON SECTION --- */}
-            <section id="comparison" className="py-16 sm:py-24 md:py-32 relative">
+            <section id="comparison" className="py-16 sm:py-20 md:py-24 relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="text-center mb-12 sm:mb-16">
                         <h2 className="font-display text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-medium reveal delay-1">
@@ -456,8 +572,146 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                 </div>
             </section>
 
+            {/* --- ARTICLE SECTION --- */}
+            <section id="articles" className="py-12 sm:py-14 md:py-16 relative">
+                
+                {/* HEADER */}
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-10 md:mb-12">
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <div className="glass-panel px-4 sm:px-6 py-1.5 sm:py-2 rounded-full inline-block mb-4 sm:mb-6 reveal">
+                                Insight & Tips
+                            </div>
+                            <h2 className="font-display text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-medium reveal delay-1">
+                                Baca & Pelajari<br/>
+                                <span className="italic text-gradient">Kesehatan Kulitmu</span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                {/* SCROLL AREA (FULL BLEED + SAFE ALIGN) */}
+                <div className="w-full overflow-x-auto overflow-y-hidden scrollbar-hide">
+                    
+                    <div className="flex gap-5 sm:gap-6 pb-4">
+                        
+                        {/* LEFT SPACER */}
+                        <div className="flex-shrink-0 w-[calc((100vw-80rem)/2+1rem)] sm:w-[calc((100vw-82rem)/2+1.5rem)]"></div>
+
+                        {loadingArticles ? (
+                            [...Array(4)].map((_, i) => (
+                                <div key={i} className="flex-shrink-0 w-[300px] md:w-[340px] h-[420px] glass-panel rounded-2xl animate-pulse"></div>
+                            ))
+                        ) : (
+                            <>
+                                {articles.map((article, index) => {
+                                    const dateObj = formatDate(article.published_at);
+                                    return (
+                                        <Link 
+                                            key={article.id}
+                                            to={`/blog/${article.slug}`}
+                                            className={`flex-shrink-0 w-[300px] md:w-[340px] group reveal active delay-${(index % 4) + 1}`}
+                                        >
+                                            <div className="relative glass-panel rounded-2xl overflow-hidden border border-transparent hover:border-[#FF8A9B] transition-all duration-500 flex flex-col h-full">
+                                                
+                                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-10">
+                                                    <div className="absolute -inset-1 bg-gradient-to-t from-[#FF8A9B] via-transparent to-transparent opacity-20 blur-xl"></div>
+                                                </div>
+
+                                                <div className="relative h-48 overflow-hidden flex-shrink-0">
+                                                    <img src={article.image} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300"></div>
+
+                                                    <div className="absolute top-4 left-4 bg-[#FF8A9B] text-white rounded-lg p-2 text-center shadow-lg z-20">
+                                                        <span className="block text-[10px] font-bold uppercase">{dateObj.month}</span>
+                                                        <span className="block text-lg font-bold leading-none">{dateObj.dateNum}</span>
+                                                    </div>
+                                                    
+                                                    <div className="absolute top-4 right-4 z-20">
+                                                        <span className="px-3 py-1 bg-[#FF8A9B] backdrop-blur-sm text-white text-[10px] rounded-full border border-white/10">
+                                                            {article.category}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="p-5 flex-1 flex flex-col relative z-20">
+                                                    <h3 className="text-lg font-semibold mb-2 leading-snug group-hover:text-[#FF8A9B] transition-colors">
+                                                        {article.title}
+                                                    </h3>
+                                                    
+                                                    <p className="text-muted text-xs mb-4 line-clamp-2">
+                                                        {article.excerpt}
+                                                    </p>
+                                                    
+                                                    <div className="pt-4 border-t border-[rgba(255,255,255,0.05)] mt-auto space-y-3">
+                                                        <div className="flex items-center justify-between">
+                                                            <div className="flex items-center gap-2">
+                                                                <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[10px] border border-white/10">
+                                                                    {article.author?.charAt(0)}
+                                                                </div>
+                                                                <span className="text-xs text-muted group-hover:text-white transition-colors">
+                                                                    {article.author}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 text-xs text-muted">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                </svg>
+                                                                <span>{article.views}</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex justify-between items-center">
+                                                            <div className="flex gap-2 overflow-hidden">
+                                                                {article.tags && article.tags.slice(0, 1).map((tag, i) => (
+                                                                    <span key={i} className="text-[10px] text-muted group-hover:text-[#FF8A9B] transition-colors truncate">
+                                                                        #{tag}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                            <span className="text-muted text-[10px]">{dateObj.year}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                    );
+                                })}
+
+                                {/* SEE MORE */}
+                                <div className="flex-shrink-0 w-[340px] md:w-[420px] min-h-[420px] group flex items-center">
+                                    <Link 
+                                        to="/blog" 
+                                        className="w-full h-full rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-[#FF8A9B]/50 hover:bg-white/5 transition-all duration-500 p-6 group"
+                                    >
+                                        <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#FF8A9B]/10 transition-colors">
+                                            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#FF8A9B" strokeWidth="2" className="transform group-hover:translate-x-1 transition-transform">
+                                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                                            </svg>
+                                        </div>
+                                        <div className="text-center">
+                                            <span className="font-display text-xl sm:text-2xl text-white/80 group-hover:text-white transition-colors">
+                                                Lihat Selengkapnya
+                                            </span>
+                                            <p className="text-base text-muted mt-1">
+                                                Temukan lebih banyak artikel
+                                            </p>
+                                        </div>
+                                    </Link>
+                                </div>
+                            </>
+                        )}
+
+                        {/* RIGHT SPACER */}
+                        <div className="flex-shrink-0 w-[calc((100vw-80rem)/2+1rem)] sm:w-[calc((100vw-82rem)/2+1.5rem)]"></div>
+
+                    </div>
+                </div>
+            </section>
+
             {/* --- GALLERY SECTION --- */}
-            <section className="py-16 sm:py-24 md:py-32 relative">
+            <section className="py-16 sm:py-20 md:py-24 relative">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6">
                     <div className="text-center mb-12 sm:mb-16">
                         <h2 className="font-display text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-medium reveal delay-1">
@@ -467,42 +721,67 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
                     </div>
                     
                     <div className="gallery-grid">
-                        <div className="gallery-item reveal delay-1 group">
-                            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=800&auto=format&fit=crop" alt="Pengaturan peralatan Mirra Sense di klinik kecantikan" />
-                            <div className="gallery-caption"><span className="text-white text-sm font-medium">In-Clinic Setup</span></div>
+                        <div className="reveal delay-1 group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,138,155,0.3)]">
+                            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=800&auto=format&fit=crop" alt="Pengaturan peralatan Mirra Sense di klinik kecantikan" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                                <span className="text-white text-sm font-medium">In-Clinic Setup</span>
+                            </div>
                         </div>
-                        <div className="gallery-item reveal delay-2 group">
-                            <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=800&auto=format&fit=crop" alt="Dokter menggunakan tablet Mirra Sense untuk analisis pasien" />
-                            <div className="gallery-caption"><span className="text-white text-sm font-medium">Tablet Integration</span></div>
+                        <div className="reveal delay-2 group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,138,155,0.3)]">
+                            <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=800&auto=format&fit=crop" alt="Dokter menggunakan tablet Mirra Sense untuk analisis pasien" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                                <span className="text-white text-sm font-medium">Tablet Integration</span>
+                            </div>
                         </div>
-                        <div className="gallery-item reveal delay-3 group">
-                            <img src="https://cliniify.com/assets/img/how-face-recognition-improves-patient-experience.jpg" alt="Proses scan wajah pasien secara cepat dan akurat" />
-                            <div className="gallery-caption"><span className="text-white text-sm font-medium">Quick Scan</span></div>
+                        <div className="reveal delay-3 group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,138,155,0.3)]">
+                            <img src="https://cliniify.com/assets/img/how-face-recognition-improves-patient-experience.jpg" alt="Proses scan wajah pasien secara cepat dan akurat" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                                <span className="text-white text-sm font-medium">Quick Scan</span>
+                            </div>
                         </div>
-                        <div className="gallery-item reveal delay-4 group">
-                            <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=800&auto=format&fit=crop" alt="Konsultasi hasil analisis kulit antara dokter dan pasien" />
-                            <div className="gallery-caption"><span className="text-white text-sm font-medium">Consultation</span></div>
+                        <div className="reveal delay-4 group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,138,155,0.3)]">
+                            <img src="https://cliniify.com/assets/img/how-face-recognition-improves-patient-experience.jpg" alt="Proses scan wajah pasien secara cepat dan akurat" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                                <span className="text-white text-sm font-medium">Consultation</span>
+                            </div>
                         </div>
-                        <div className="gallery-item reveal delay-1 group">
-                            <img src="https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=80&w=800&auto=format&fit=crop" alt="Close-up perangkat imaging kulit resolusi tinggi" />
-                            <div className="gallery-caption"><span className="text-white text-sm font-medium">High-Res Imaging</span></div>
+                        <div className="reveal delay-1 group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,138,155,0.3)]">
+                            <img src="https://images.unsplash.com/photo-1584982751601-97dcc096659c?q=80&w=800&auto=format&fit=crop" alt="Close-up perangkat imaging kulit resolusi tinggi" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                                <span className="text-white text-sm font-medium">High-Res Imaging</span>
+                            </div>
                         </div>
-                        <div className="gallery-item reveal delay-2 group">
-                            <img src="https://images.unsplash.com/photo-1516549655169-df83a0774514?q=80&w=800&auto=format&fit=crop" alt="Analisis tekstur kulit menggunakan teknologi AI" />
-                            <div className="gallery-caption"><span className="text-white text-sm font-medium">Texture Analysis</span></div>
+                        <div className="reveal delay-2 group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(255,138,155,0.3)]">
+                            <img src="https://images.unsplash.com/photo-1516549655169-df83a0774514?q=80&w=800&auto=format&fit=crop" alt="Analisis tekstur kulit menggunakan teknologi AI" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                            <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+                                <span className="text-white text-sm font-medium">Texture Analysis</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* --- CTA SECTION --- */}
-            <section className="py-16 sm:py-24 md:py-32 relative">
+            <section className="py-16 sm:py-20 md:py-24 relative">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
                     <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium mb-6 sm:mb-8 reveal">
-                        Siap Membawa Klinik Anda<br/><span className="italic text-gradient">ke Era Digital?</span>
+                        Tertarik untuk Berkonsultasi?<br/><span className="italic text-gradient">Mari Berdiskusi Bersama Kami</span>
                     </h2>
                     <div className="reveal delay-1">
-                        <button onClick={() => setIsScanModalOpen(true)} className="btn-primary text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4">Coba Demo Sekarang</button>
+                        <a 
+                            href="https://wa.me/6281258070694" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="btn-primary inline-block text-base sm:text-lg px-8 sm:px-10 py-3 sm:py-4"
+                        >
+                            Hubungi Kami Sekarang
+                        </a>
                     </div>
                 </div>
             </section>
@@ -510,7 +789,6 @@ function LandingPage({ openLoginModal }: LandingPageProps) {
         </main>
 
             <Footer />
-            {/* Hanya ScanModal yang dirender lokal */}
             <ScanModal isOpen={isScanModalOpen} onClose={() => setIsScanModalOpen(false)} />
         </div>
     );
